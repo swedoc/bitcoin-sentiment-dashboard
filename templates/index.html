@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Bitcoin Dashboard</title>
+  <title>Bitcoin Sentiment Dashboard</title>
+  <meta http-equiv="refresh" content="60">
   <style>
     body {
       background: #111;
@@ -13,42 +14,70 @@
     }
     .container {
       padding: 20px;
-      max-width: 600px;
+      max-width: 800px;
       margin: auto;
     }
     .box {
       background: #222;
       border-radius: 12px;
       padding: 20px;
-      margin-top: 80px;
+      margin-bottom: 20px;
       text-align: center;
     }
     .value {
-      font-size: 2.8em;
+      font-size: 2.2em;
       margin: 10px 0;
+    }
+    .desc {
+      font-size: 1em;
+      color: #bbb;
+    }
+    .timestamp {
+      color: #888;
+      font-size: 0.85em;
+      text-align: center;
+      margin-top: 30px;
     }
     .error {
       color: red;
-      font-size: 0.95em;
+      font-size: 0.9em;
       margin-top: 10px;
-    }
-    .timestamp {
-      color: #999;
-      font-size: 0.85em;
-      margin-top: 10px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="box">
-      <h2>Bitcoin Price (BTC/USDT)</h2>
-      <p class="value">${{ price }}</p>
-      {% if price_error %}
-        <p class="error">⚠️ {{ price_error }}</p>
-      {% endif %}
-      <p class="timestamp">Updated: {{ timestamp }} (CET)</p>
-    </div>
+<div class="container">
+  <div class="box">
+    <h2>Bitcoin Price</h2>
+    <p class="value">${{ price }}</p>
   </div>
+  <div class="box">
+    <h2>Fear & Greed Index</h2>
+    <p class="value">{{ fgi }}</p>
+    <p class="desc">{{ fgi_text }}</p>
+  </div>
+  <div class="box">
+    <h2>Funding Rate</h2>
+    <p class="value">{{ funding_rate }}</p>
+    <p class="desc">{{ fr_text }}</p>
+  </div>
+  <div class="box">
+    <h2>Open Interest</h2>
+    <p class="value">{{ open_interest }}</p>
+    <p class="desc">{{ oi_text }}</p>
+  </div>
+  <div class="box">
+    <h2>Volume</h2>
+    <p class="value">${{ volume }}</p>
+    <p class="desc">{{ vol_text }}</p>
+  </div>
+
+  {% for err in errors %}
+    {% if err %}<p class="error">⚠️ {{ err }}</p>{% endif %}
+  {% endfor %}
+
+  <p class="timestamp">Updated: {{ timestamp }} (CET)</p>
+</div>
 </body>
 </html>
