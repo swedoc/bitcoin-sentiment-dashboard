@@ -5,21 +5,21 @@ import pytz
 
 app = Flask(__name__)
 
-def get_price(symbol):
-    url = f"https://api.binance.com/api/v3/ticker/price?symbol={symbol}"
+def get_price():
+    url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
     try:
         response = requests.get(url)
         data = response.json()
-        if "price" in data:
-            return float(data["price"]), None
+        if "bitcoin" in data and "usd" in data["bitcoin"]:
+            return float(data["bitcoin"]["usd"]), None
         else:
-            return 0.0, f"API error: {data.get('msg', 'unknown error')}"
+            return 0.0, f"API error: Unexpected response: {data}"
     except Exception as e:
         return 0.0, f"Request failed: {e}"
 
 @app.route("/")
 def index():
-    price, price_error = get_price("BTCUSDT")
+    price, price_error = get_price()
 
     cet_time = datetime.datetime.now(pytz.timezone("Europe/Stockholm")).strftime("%Y-%m-%d %H:%M:%S")
 
