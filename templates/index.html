@@ -1,174 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>BITCOIN SENTIMENT DASHBOARD</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            background: #111;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            padding: 20px;
-            max-width: 800px;
-            margin: auto;
-        }
-        .box {
-            background: #222;
-            border-radius: 16px;
-            padding: 12px;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-        .value {
-            font-size: 2.2em;
-            font-weight: bold;
-        }
-        .description {
-            margin-top: 6px;
-            font-size: 1em;
-        }
-        .green { color: #00e676; }
-        .red { color: #ff5252; }
-        .orange { color: #ffa726; }
-        .gray { color: #ccc; }
-
-        .arrow {
-            display: inline-block;
-            transform: rotate(270deg);
-            margin-left: 8px;
-            color: orange;
-        }
-
-        .pair-box {
-            background: #333;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 12px;
-            text-align: center;
-            font-size: 1em;
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 0.9em;
-            margin-top: 40px;
-            color: #aaa;
-        }
-
-        .explainer {
-            background: #1b1b1b;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 16px;
-            font-size: 0.95em;
-            text-align: center;
-            color: #bbb;
-        }
-
-        .timestamp-top {
-            font-size: 0.95em;
-            text-align: center;
-            margin-bottom: 10px;
-            color: #aaa;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 10px;
-            }
-            .value {
-                font-size: 1.8em;
-            }
-        }
-    </style>
-    <script>
-        setTimeout(() => location.reload(), 60000);
-    </script>
+  <meta charset="UTF-8">
+  <title>Bitcoin Dashboard</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    .box {
+      background: #222;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .value {
+      font-size: 2em;
+      margin: 10px 0;
+    }
+    .error {
+      color: red;
+      font-size: 0.95em;
+    }
+    .timestamp {
+      color: #999;
+      font-size: 0.85em;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2 style="text-align:center; font-size: 2.4em; margin-bottom: 0.2em;">BITCOIN SENTIMENT DASHBOARD</h2>
-
-        <div class="timestamp-top">
-            Updated: {{ timestamp }} CET<br>
-            Data from: Binance API, Alternative.me API
-        </div>
-
-        <div class="explainer">
-            FR = Funding Rate | OI = Open Interest | FGI = Fear & Greed Index<br>
-            Reference ranges are shown below.
-        </div>
-
-        <div class="box">
-            <div class="value {{ all_combo[1] }}">{{ all_combo[0] }}</div>
-            <div class="description">{{ all_combo[2] }}</div>
-            <div class="description" style="font-size: 0.9em; color: #bbb;">
-                This summary is based on a combined interpretation of FGI, Funding Rate, Open Interest, and Volume.
-            </div>
-        </div>
-
-        <div class="box">
-            <div class="value {{ fgi_text[1] }}">
-                Fear & Greed Index: {{ fgi }} <span class="arrow">&#x25B6;</span>
-            </div>
-            <div class="description">{{ fgi_text[0] }}</div>
-        </div>
-
-        <div class="box">
-            <div class="value">${{ price | round(2) }}</div>
-            <div class="description">BTC/USDT price</div>
-        </div>
-
-        <div class="box">
-            <div class="value {{ fr_text[1] }}">{{ '%.6f' % funding_rate if funding_rate != 'N/A' else 'N/A' }}</div>
-            <div class="description">Funding Rate ({{ fr_text[0] }})</div>
-        </div>
-
-        <div class="box">
-            <div class="value {{ oi_text[1] }}">{{ open_interest | round(2) if open_interest != 'N/A' else 'N/A' }} B</div>
-            <div class="description">Open Interest ({{ oi_text[0] }})</div>
-        </div>
-
-        <div class="box">
-            <div class="value {{ vol_text[1] }}">{{ volume | round(2) if volume != 'N/A' else 'N/A' }} B</div>
-            <div class="description">24h Volume ({{ vol_text[0] }})</div>
-        </div>
-
-        <h3 style="text-align:center;">Pairwise Analysis</h3>
-
-        <div class="pair-box {{ fr_vol[1] }}">
-            <strong>Funding Rate + Volume:</strong><br>
-            {{ fr_vol[0] }}<br><em>{{ fr_vol[2] }}</em><br>
-            <small>Interpretation of short/long bias and conviction level based on funding and volume strength.</small>
-        </div>
-
-        <div class="pair-box {{ oi_vol[1] }}">
-            <strong>Open Interest + Volume:</strong><br>
-            {{ oi_vol[0] }}<br><em>{{ oi_vol[2] }}</em><br>
-            <small>Indicates trader positioning and market readiness or hesitation.</small>
-        </div>
-
-        <div class="pair-box {{ fgi_vol[1] }}">
-            <strong>Fear & Greed + Volume:</strong><br>
-            {{ fgi_vol[0] }}<br><em>{{ fgi_vol[2] }}</em><br>
-            <small>Combines crowd sentiment with strength of trading activity.</small>
-        </div>
-
-        <div class="pair-box {{ all_combo[1] }}">
-            <strong>All Four Combined:</strong><br>
-            {{ all_combo[0] }}<br><em>{{ all_combo[2] }}</em><br>
-            <small>A holistic sentiment signal based on all tracked indicators.</small>
-        </div>
-
-        <div class="footer">
-            <p><strong>Reference Ranges</strong></p>
-            <p>FR Neutral: -0.01 to 0.01 | OI Neutral: 6–10B | Volume Neutral: 5–10B | FGI Neutral: 50–54</p>
-        </div>
+  <div class="container">
+    <div class="box">
+      <h2>Bitcoin Price (BTC/USDT)</h2>
+      <p class="value">${{ price }}</p>
+      {% if price_error %}
+        <p class="error">⚠️ {{ price_error }}</p>
+      {% endif %}
+      <p class="timestamp">Updated: {{ timestamp }} (CET)</p>
     </div>
+  </div>
 </body>
 </html>
+
